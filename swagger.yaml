@@ -1,0 +1,118 @@
+openapi: 3.0.1
+info:
+  title: GRIP API DATALAKE
+  description: ""
+  version: 1.0.0
+
+security:
+  - BasicAuth: []
+
+servers:
+  - url: http://10.214.16.2/
+    description: STG
+  - url: http://10.232.80.53/
+    description: INT
+  - url: http://10.231.0.127/
+    description: PRD
+
+tags:
+  - name: GRIP
+
+paths:
+  /grid:
+    post:
+      tags:
+      - "GRIP"
+      summary: "Devolve o resultado da query feita no bigQuery"
+      operationId: "app.foo_get"
+      requestBody:
+        description: "temp"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Grid'
+        required: true
+      responses:
+        200:
+          description: Query realizada com sucesso  
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gridResponseOk'
+        204: 
+          description: Resultado vazio      
+        400:
+          description: Query invalida ou erro no parametro
+        500:
+          description: Erro interno no servidor
+          
+components: 
+  schemas:
+    Grid:
+      type: object
+      required:
+      - data_inicio
+      - data_fim
+      - indice
+      - ordenamento
+      properties:
+        data_inicio:
+          type: "string"
+          format: "date"
+        data_fim:
+          type: "string"
+          format: "date"
+        indice:
+          type: "string"
+          format: "string"
+          example: "indice_solvencia"
+          description: "indice_solvencia ou indice_liquidez"
+        ordenamento:
+          type: "string"
+          format: "string"
+          example: "DESC"
+          description: "DESC ou ASC"
+        arranjo:
+          type: array
+          items:
+            type: object
+            format: "string"
+          example: ["MCC", "VCC", "MCD"]
+          description: "Parametros separados por vírgula"
+        credenciadora:
+          type: "string"
+          format: "string"
+          example: "52647058000140"
+        sub_credenciadora:
+          type: "string"
+          format: "string"
+          example: "46779136000120"
+    gridResponseOk:
+      type: object
+      properties:
+        credenciadora: 
+          type: string
+          example: "01027058000191"
+        faturamento:
+          type: number
+          example: 17716948.87
+        indice_liquidez:
+          type: number
+          example: 0
+        indice_solvencia:
+          type: number
+          example: 0
+        nome_credenciadora: 
+          type: string
+          example: "SUMUP"
+        nome_subcredenciadora: 
+          type: string
+          example: "SUMUP"
+        sub_credenciadora:
+          type: string
+          example: '16668076000120'
+    
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
